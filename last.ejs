@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Display Images</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #333;
+        --secondary-color: #f0f0f0;
+        --background-color: #f0f0f0;
+        --text-color: #333;
+      }
+
+      .dark-mode {
+        --primary-color: #fff;
+        --secondary-color: #333;
+        --background-color: #333;
+        --text-color: #fff;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        padding: 20px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .image-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        justify-items: center;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .image-item {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+        width: 250px;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        height: fit-content;
+      }
+
+      .image-item:hover {
+        transform: translateY(-5px);
+      }
+
+      .image-details {
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-bottom: 1px solid #ccc;
+      }
+
+      .image-details h2 {
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+
+      .image-details p {
+        font-size: 14px;
+        color: #666;
+      }
+
+      .image-item img {
+        width: 100%;
+        display: block;
+        border-bottom: 1px solid #ccc;
+      }
+
+      .delete-button {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        cursor: pointer;
+        width: 100%;
+      }
+
+      .delete-button:hover {
+        background-color: #c82333;
+      }
+
+      .delete-form {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        z-index: 1000;
+      }
+
+      .delete-form label {
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      .delete-form input {
+        margin-bottom: 10px;
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      .delete-form button {
+        padding: 8px 16px;
+        margin-right: 10px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      .tick-mark {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        background-color: #28a745;
+        color: white;
+        font-size: 24px;
+        display: none;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 30px;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+        align-items: center;
+        z-index: 1001;
+      }
+
+      .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        position: relative;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+      }
+
+      .modal-content img {
+        max-width: 90%;
+        max-height: 80vh;
+        border-radius: 8px;
+        border: 2px solid #ccc;
+        transition: transform 0.2s ease;
+      }
+
+      .modal-content img:hover {
+        transform: scale(1.05);
+      }
+
+      .close {
+        position: absolute;
+        top: 4px;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        justify-self: center;
+        align-items: center;
+        right: 10px;
+        font-size: 30px;
+        color: #000;
+        cursor: pointer;
+        border: 2px solid #ccc;
+        border-radius: 50%;
+        padding: 5px;
+        transition: all 0.3s ease;
+      }
+
+      .close:hover {
+        background-color: #ccc;
+        transform: scale(1.1);
+      }
+      
+      .dark-mode {
+        background-color: var(--background-color);
+        color: var(--text-color);
+      }
+
+      .dark-mode .image-item {
+        background-color: var(--secondary-color);
+        border: 1px solid var(--primary-color);
+      }
+
+      .dark-mode .image-details {
+        background-color: var(--secondary-color);
+        border-bottom: 1px solid var(--primary-color);
+      }
+
+      .dark-mode .delete-button {
+        background-color: var(--primary-color);
+        color: var(--text-color);
+      }
+
+      .dark-mode .modal-content {
+        background-color: var(--secondary-color);
+        border: 1px solid var(--primary-color);
+      }
+
+      .dark-mode .close {
+        color: var(--text-color);
+        border: 2px solid var(--primary-color);
+      }
+      .dark-mode .delete-button {
+        background-color: #66d8efca; 
+        color: #0b0b0b; 
+      }
+
+      .dark-mode .image-details p {
+        color: #ffff66ba;
+      }
+      .toggle-button {
+        background-color: #333; 
+        border-color: #555; 
+        color: #fff; 
+        cursor: pointer;
+        position: absolute;
+        right: 20px;
+        top: 10px;
+
+        padding: 8px 12px;
+        border-radius: 50%;
+      }
+
+      .toggle-button:hover {
+        background-color: #444; 
+        border-color: #666; 
+      }
+
+      .toggle-button i {
+        font-size: 18px; 
+      }
+
+      .dark-mode .toggle-button {
+        background-color: #66d9ef; 
+        border-color: #87ceeb; 
+        color: #333; 
+      }
+
+      .dark-mode .toggle-button i {
+        font-size: 18px; 
+      }
+
+      
+      .toggle-button i {
+        font-family: "Font Awesome 5 Free";
+        font-weight: 400;
+      }
+
+      .toggle-button i:before {
+        content: "\f185"; 
+      }
+
+      .dark-mode .toggle-button i:before {
+        content: "\f186"; 
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Images</h1>
+    <button class="toggle-button" onclick="toggleDarkMode()">
+      <i class="fa-solid fa-sun"></i>
+    </button>
+    <div class="image-container">
+      <% images.forEach(image => { %>
+      <div
+        class="image-item"
+        onclick="showModal(`<%= image.imageData.toString('base64') %>`)"
+        data-aos="fade-up"
+        data-aos-duration="500"
+        data-aos-easing="ease-in-sine"
+      >
+        <div class="image-details">
+          <p>Created At: <%= image.createdAt %></p>
+        </div>
+        <img
+          src="data:image/jpeg;base64,<%= image.imageData.toString('base64') %>"
+          alt="Image <%= image.id %>"
+        />
+        <button
+          class="delete-button"
+          onclick="event.stopPropagation(); showDeleteForm('<%= image.id %>')"
+        >
+          Delete
+        </button>
+        <div id="tick<%= image.id %>" class="tick-mark">✓</div>
+      </div>
+      <% }); %>
+    </div>
+
+    <div id="delete-form" class="delete-form">
+      <h2 style="color: #000">Delete Image</h2>
+      <label for="image-id">Enter Image ID to delete:</label>
+      <input type="text" id="image-id" name="image-id" />
+      <button onclick="submitDeleteForm()">Submit</button>
+      <button onclick="hideDeleteForm()">Cancel</button>
+    </div>
+
+    <div id="image-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="hideModal()">
+          <span>&times;</span>
+        </span>
+        <img id="modal-image" src="" alt="Enlarged Image" />
+      </div>
+    </div>
+
+    <script>
+      let darkMode = false;
+
+      function toggleDarkMode() {
+        darkMode = !darkMode;
+        document.body.classList.toggle("dark-mode");
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        AOS.init({
+          once: true,
+        });
+      });
+      function showDeleteForm(imageId) {
+        document.getElementById("delete-form").style.display = "block";
+        document.getElementById("image-id").value = imageId;
+      }
+
+      function hideDeleteForm() {
+        document.getElementById("delete-form").style.display = "none";
+      }
+
+      function submitDeleteForm() {
+        const imageId = document.getElementById("image-id").value;
+        if (imageId) {
+          fetch("/delete-image", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id: imageId }),
+          }).then((response) => {
+            if (response.ok) {
+              const tickElement = document.getElementById("tick" + imageId);
+              tickElement.style.display = "block"; 
+              setTimeout(() => {
+                tickElement.style.display = "none"; 
+                location.reload(); 
+              }, 2000);
+            } else {
+              alert("Failed to delete image");
+            }
+          });
+        }
+      }
+
+      function showModal(imageData) {
+        const modal = document.getElementById("image-modal");
+        const modalImage = document.getElementById("modal-image");
+        modalImage.src = "data:image/jpeg;base64," + imageData;
+        modal.style.display = "flex";
+      }
+
+      function hideModal() {
+        const modal = document.getElementById("image-modal");
+        modal.style.display = "none";
+      }
+    </script>
+  </body>
+</html>
